@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+  <title>Kafe Kenangan · Modern Cafe</title>
+  <meta name="description" content="Kafe Kenangan - tempat nongkrong asik dengan menu terbaik dan suasana modern.">
+  <meta name="keywords" content="kafe, kopi, makanan, modern, kenangan">
+  <meta property="og:title" content="Kafe Kenangan">
+  <meta property="og:description" content="Tempat nongkrong favorit dengan cita rasa premium.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; scroll-behavior: smooth; }
+    :root { 
+      --primary: #f4a261; --secondary: #2d2d2d; --bg: #fefaf0; 
+      --card: #ffffff; --shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
+      --radius: 24px; --transition: 0.25s ease;
+    }
+    body { background: var(--bg); color: #1e1e1e; line-height: 1.5; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    /* loading */
+    #loading { position: fixed; inset: 0; background: #fff3e0; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
+    #loading.hide { opacity: 0; pointer-events: none; }
+    .loader { width: 48px; height: 48px; border: 6px solid #f4a261; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* navbar */
+    nav { background: #fffcf7; backdrop-filter: blur(4px); box-shadow: 0 4px 20px rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 100; padding: 12px 0; transition: background 0.2s; }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .logo { font-size: 1.7rem; font-weight: 700; color: var(--secondary); letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+    .logo i { color: var(--primary); }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a { text-decoration: none; color: #2d2d2d; font-weight: 500; transition: 0.2s; border-bottom: 2px solid transparent; padding-bottom: 4px; cursor: pointer; }
+    .nav-links a:hover, .nav-links a.active { border-bottom-color: var(--primary); color: #b4652b; }
+    .hamburger { display: none; font-size: 1.8rem; cursor: pointer; color: var(--secondary); background: none; border: none; }
+    .cart-icon { position: relative; font-size: 1.4rem; cursor: pointer; color: var(--secondary); }
+    .cart-badge { background: var(--primary); color: #fff; border-radius: 20px; padding: 0 8px; font-size: 0.7rem; position: absolute; top: -10px; right: -12px; }
+    /* hero */
+    .hero { min-height: 90vh; display: flex; align-items: center; background: linear-gradient(145deg, #fceae0, #fef6ed); border-radius: 0 0 60px 60px; padding: 40px 0; margin-bottom: 40px; }
+    .hero-content { max-width: 600px; }
+    .hero h1 { font-size: 4rem; line-height: 1.1; font-weight: 800; }
+    .hero h1 span { color: var(--primary); }
+    .hero p { font-size: 1.3rem; margin: 20px 0 30px; color: #3d3d3d; }
+    .btn-group { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 14px 34px; border-radius: 60px; font-weight: 600; text-decoration: none; transition: 0.2s; border: none; cursor: pointer; background: var(--secondary); color: white; }
+    .btn-primary { background: var(--primary); color: #1e1e1e; }
+    .btn-primary:hover { transform: scale(1.03); box-shadow: 0 12px 24px -8px rgba(244, 162, 97, 0.5); }
+    .btn-outline { background: transparent; border: 2px solid var(--secondary); color: var(--secondary); }
+    .btn-outline:hover { background: var(--secondary); color: white; }
+    /* section */
+    section { padding: 70px 0; }
+    .section-title { font-size: 2.6rem; font-weight: 700; margin-bottom: 40px; position: relative; display: inline-block; }
+    .section-title:after { content: ''; width: 60px; height: 5px; background: var(--primary); position: absolute; bottom: -12px; left: 0; border-radius: 10px; }
+    /* menu card */
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; }
+    .menu-card { background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: 0.3s; cursor: pointer; }
+    .menu-card:hover { transform: translateY(-10px) scale(1.01); box-shadow: 0 30px 50px -20px rgba(0,0,0,0.25); }
+    .menu-card img { width: 100%; height: 180px; object-fit: cover; background: #ddd; }
+    .menu-card .info { padding: 20px; }
+    .menu-card h3 { font-size: 1.3rem; }
+    .menu-card p { color: #555; font-size: 0.95rem; margin: 6px 0 12px; }
+    .menu-card .price { font-weight: 700; font-size: 1.3rem; color: var(--primary); }
+    .menu-card .add-btn { background: var(--primary); border: none; padding: 8px 16px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 8px; }
+    .menu-card .add-btn:hover { background: #e08f4a; }
+    /* tentang */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+    .about-grid img { width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); background: #ddd; }
+    /* galeri */
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 20px; }
+    .gallery-grid img { width: 100%; height: 180px; object-fit: cover; border-radius: 20px; transition: 0.3s; cursor: pointer; background: #ddd; }
+    .gallery-grid img:hover { transform: scale(1.05); box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+    /* testimoni */
+    .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 30px; }
+    .testi-card { background: white; padding: 24px; border-radius: var(--radius); box-shadow: var(--shadow); }
+    .testi-card .stars { color: #f4b942; letter-spacing: 2px; }
+    /* kontak */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .contact-info i { width: 30px; color: var(--primary); }
+    .contact-info p { margin: 10px 0; }
+    form input, form textarea, form select { width: 100%; padding: 14px; border-radius: 40px; border: 1px solid #ddd; margin: 8px 0; }
+    form button { background: var(--primary); border: none; padding: 14px 30px; border-radius: 60px; font-weight: 600; cursor: pointer; }
+    /* footer */
+    footer { background: #1e1e1e; color: #ddd; padding: 40px 0; margin-top: 40px; }
+    footer a { color: #ddd; margin: 0 12px; }
+    /* cart sidebar */
+    .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 999; display: none; }
+    .cart-sidebar { position: fixed; right: 0; top: 0; width: 420px; max-width: 90vw; height: 100%; background: white; box-shadow: -10px 0 30px rgba(0,0,0,0.2); padding: 30px; overflow-y: auto; z-index: 1000; transform: translateX(100%); transition: 0.3s; }
+    .cart-sidebar.open { transform: translateX(0); }
+    .cart-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 12px 0; }
+    .cart-item .qty { display: flex; gap: 8px; align-items: center; }
+    .cart-total { font-weight: 700; font-size: 1.4rem; margin: 20px 0; }
+    /* responsive */
+    @media (max-width: 800px) {
+      .nav-links { display: none; flex-direction: column; background: white; width: 100%; padding: 20px; border-radius: 30px; margin-top: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+      .nav-links.open { display: flex; }
+      .hamburger { display: block; }
+      .hero h1 { font-size: 3rem; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; }
+    }
+    .fade { opacity: 0; transform: translateY(30px); transition: 0.6s; }
+    .fade.visible { opacity: 1; transform: translateY(0); }
+    .back-top { position: fixed; bottom: 30px; right: 30px; background: var(--primary); color: #1e1e1e; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.2); z-index: 99; }
+    .filter-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+    .filter-buttons button { background: #eee; border: none; padding: 8px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+    .filter-buttons button.active, .filter-buttons button:hover { background: var(--primary); color: #1e1e1e; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
+    .modal-content { background: white; max-width: 500px; width: 90%; padding: 30px; border-radius: 40px; max-height: 90vh; overflow-y: auto; }
+    .modal-content .close { float: right; font-size: 2rem; cursor: pointer; }
+    .modal-content label { display: block; margin: 12px 0 4px; font-weight: 500; }
+    .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 12px; border-radius: 30px; border: 1px solid #ddd; margin: 4px 0 12px; }
+  </style>
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<!-- NAV -->
+<nav>
+  <div class="container nav-inner">
+    <div class="logo"><i class="fas fa-mug-hot"></i> Kafe Kenangan</div>
+    <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+    <div class="nav-links" id="navLinks">
+      <a href="#home" class="active">Beranda</a>
+      <a href="#menu">Menu</a>
+      <a href="#tentang">Tentang</a>
+      <a href="#galeri">Galeri</a>
+      <a href="#testimoni">Testimoni</a>
+      <a href="#kontak">Kontak</a>
+      <span class="cart-icon" id="cartOpen"><i class="fas fa-shopping-cart"></i><span class="cart-badge" id="cartCount">0</span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="home" class="hero">
+  <div class="container hero-content">
+    <h1>Kafe <span>Kenangan</span></h1>
+    <p>Kalau ga suka bilang kita, kalau suka jangan lupa bawa kawan</p>
+    <div class="btn-group">
+      <a href="#menu" class="btn btn-primary">Lihat Menu</a>
+      <a href="#menu" class="btn btn-outline" id="pesanSekarang">Pesan Sekarang</a>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="container">
+    <h2 class="section-title">Menu Kami</h2>
+    <div class="filter-buttons" id="filterButtons">
+      <button class="active" data-filter="all">Semua</button>
+      <button data-filter="kopi">Kopi</button>
+      <button data-filter="makanan">Makanan</button>
+      <button data-filter="dessert">Dessert</button>
+    </div>
+    <div class="menu-grid" id="menuGrid"></div>
+  </div>
+</section>
+
+<!-- TENTANG -->
+<section id="tentang">
+  <div class="container about-grid">
+    <div><h2 class="section-title">Tentang Kami</h2><p><strong>Kafe Kenangan</strong> lahir dari kecintaan pada kopi dan keramahan. Visi: menjadi ruang ketiga favorit. Misi: menyajikan kualitas terbaik, pelayanan hangat, dan inovasi rasa.</p><p>📍 Jln Kapuk Rawa Gabus</p></div>
+    <img src="https://placecats.com/600/400?random=1" alt="interior kafe" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22400%22><rect fill=%22%23f4a261%22 width=%22600%22 height=%22400%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22>🏠</text></svg>'">
+  </div>
+</section>
+
+<!-- GALERI -->
+<section id="galeri">
+  <div class="container"><h2 class="section-title">Galeri</h2><div class="gallery-grid" id="galleryGrid"></div></div>
+</section>
+
+<!-- TESTIMONI -->
+<section id="testimoni">
+  <div class="container"><h2 class="section-title">Testimoni</h2><div class="testi-grid" id="testiGrid"></div></div>
+</section>
+
+<!-- KONTAK -->
+<section id="kontak">
+  <div class="container contact-grid">
+    <div><h2 class="section-title">Kontak</h2><div class="contact-info"><p><i class="fas fa-map-pin"></i> Jln Kapuk Rawa Gabus</p><p><i class="fab fa-whatsapp"></i> 081400684408</p><p><i class="fas fa-envelope"></i> samuelfernandomanurung88@gmail.com</p><p><i class="fas fa-clock"></i> 07.00-22.00</p></div><iframe src="https://maps.google.com/maps?q=Jln%20Kapuk%20Rawa%20Gabus&t=&z=13&ie=UTF8&iwloc=&output=embed" style="width:100%;height:200px;border-radius:20px;border:0;margin-top:12px;"></iframe></div>
+    <div><h3>Kirim Pesan</h3><form id="contactForm"><input type="text" placeholder="Nama" required><input type="email" placeholder="Email"><textarea rows="3" placeholder="Pesan"></textarea><button type="submit" class="btn btn-primary">Kirim</button></form></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer><div class="container" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;"><span>© 2026 Kafe Kenangan</span><span><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-youtube"></i></a></span></div></footer>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="backTop"><i class="fas fa-arrow-up"></i></button>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-sidebar" id="cartSidebar"><h2>🛒 Keranjang</h2><div id="cartItems"></div><div class="cart-total" id="cartTotal">Total: Rp 0</div><button class="btn btn-primary" id="checkoutBtn" style="width:100%;">Pesan Sekarang</button><button id="closeCart" style="margin-top:12px;background:transparent;border:none;text-decoration:underline;cursor:pointer;">Tutup</button></div>
+
+<!-- MODAL PEMESANAN / KONFIRMASI -->
+<div class="modal" id="orderModal" style="display:none;"><div class="modal-content" id="orderModalContent"></div></div>
+
+<script>
+  (function(){
+    // DATA
+    const cafe = { name:'Kafe Kenangan', slogan:'Kalau ga suka bilang kita,kalau suka jangan lupa bawa kawan', address:'Jln Kapuk Rawa Gabus', wa:'081400684408', email:'samuelfernandomanurung88@gmail.com', hours:'07.00-22.00' };
+    const menuData = [
+      { id:1, name:'Espresso', desc:'Kopi pekat khas Italia', price:25000, category:'kopi', img:'https://placecats.com/200/200?random=1' },
+      { id:2, name:'Cappuccino', desc:'Dengan busa susu lembut', price:32000, category:'kopi', img:'https://placecats.com/200/200?random=2' },
+      { id:3, name:'Latte', desc:'Kopi susu klasik', price:30000, category:'kopi', img:'https://placecats.com/200/200?random=3' },
+      { id:4, name:'Nasi Goreng', desc:'Nasi goreng spesial', price:45000, category:'makanan', img:'https://placecats.com/200/200?random=4' },
+      { id:5, name:'Pasta Carbonara', desc:'Pasta creamy dengan keju', price:48000, category:'makanan', img:'https://placecats.com/200/200?random=5' },
+      { id:6, name:'Cheesecake', desc:'Creamy cheesecake blueberry', price:35000, category:'dessert', img:'https://placecats.com/200/200?random=6' },
+      { id:7, name:'Brownies', desc:'Brownies coklat lumer', price:28000, category:'dessert', img:'https://placecats.com/200/200?random=7' },
+      { id:8, name:'Matcha Latte', desc:'Minuman matcha susu', price:33000, category:'kopi', img:'https://placecats.com/200/200?random=8' }
+    ];
+    const testimonials = [{name:'Andi', rating:5, comment:'Enak banget, suasananya cozy!', img:'https://placecats.com/100/100?random=1'},{name:'Sari', rating:4, comment:'Kopi terbaik di kota', img:'https://placecats.com/100/100?random=2'},{name:'Rina', rating:5, comment:'Pelayanan ramah, makanan lezat', img:'https://placecats.com/100/100?random=3'}];
+    const galleryImgs = ['https://placecats.com/300/200?random=10','https://placecats.com/300/200?random=11','https://placecats.com/300/200?random=12','https://placecats.com/300/200?random=13','https://placecats.com/300/200?random=14','https://placecats.com/300/200?random=15'];
+
+    // state
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let currentFilter = 'all';
+
+    // DOM refs
+    const menuGrid = document.getElementById('menuGrid');
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartCount = document.getElementById('cartCount');
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const orderModal = document.getElementById('orderModal');
+    const orderModalContent = document.getElementById('orderModalContent');
+    const loading = document.getElementById('loading');
+
+    // Hide loading
+    setTimeout(() => loading.classList.add('hide'), 500);
+
+    // render menu
+    function renderMenu(filter = 'all') {
+      const filtered = filter === 'all' ? menuData : menuData.filter(m => m.category === filter);
+      menuGrid.innerHTML = filtered.map(m => `
+        <div class="menu-card" data-id="${m.id}">
+          <img src="${m.img}" alt="${m.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23f4a261%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2230%22>☕</text></svg>'">
+          <div class="info"><h3>${m.name}</h3><p>${m.desc}</p><span class="price">Rp ${m.price.toLocaleString()}</span><br><button class="add-btn" data-id="${m.id}"><i class="fas fa-plus"></i> Tambah</button></div>
+        </div>
+      `).join('');
+      document.querySelectorAll('.add-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); addToCart(parseInt(btn.dataset.id)); }));
+    }
+
+    // add to cart
+    function addToCart(id) {
+      const item = menuData.find(m => m.id === id);
+      if (!item) return;
+      const existing = cart.find(c => c.id === id);
+      if (existing) existing.qty += 1;
+      else cart.push({ ...item, qty: 1 });
+      updateCart();
+    }
+
+    function updateCart() {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+      cartCount.textContent = cart.reduce((sum, i) => sum + i.qty, 0);
+    }
+
+    function renderCart() {
+      if (!cartItems) return;
+      if (cart.length === 0) { cartItems.innerHTML = '<p>Keranjang kosong</p>'; cartTotal.textContent = 'Total: Rp 0'; return; }
+      let html = '';
+      let total = 0;
+      cart.forEach((item, idx) => {
+        total += item.price * item.qty;
+        html += `<div class="cart-item"><div><strong>${item.name}</strong> x${item.qty} <br><span>Rp ${(item.price*item.qty).toLocaleString()}</span></div><div class="qty"><button onclick="window.changeQty(${idx},-1)">-</button><span>${item.qty}</span><button onclick="window.changeQty(${idx},1)">+</button><button onclick="window.removeItem(${idx})" style="color:red;background:none;border:none;cursor:pointer;"><i class="fas fa-trash"></i></button></div></div>`;
+      });
+      cartItems.innerHTML = html;
+      cartTotal.textContent = `Total: Rp ${total.toLocaleString()}`;
+    }
+
+    window.changeQty = function(idx, delta) {
+      if (cart[idx]) {
+        cart[idx].qty += delta;
+        if (cart[idx].qty <= 0) cart.splice(idx, 1);
+        updateCart();
+      }
+    };
+    window.removeItem = function(idx) { cart.splice(idx,1); updateCart(); };
+
+    // filter
+    document.getElementById('filterButtons').addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON') {
+        document.querySelectorAll('#filterButtons button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.dataset.filter;
+        renderMenu(currentFilter);
+      }
+    });
+
+    // galeri
+    (function renderGallery() {
+      const g = document.getElementById('galleryGrid');
+      g.innerHTML = galleryImgs.map(url => `<img src="${url}" alt="galeri" loading="lazy" onclick="this.style.transform='scale(1.1)'" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22><rect fill=%22%23eee%22 width=%22300%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>🖼️</text></svg>'">`).join('');
+    })();
+
+    // testimoni
+    (function renderTesti() {
+      const t = document.getElementById('testiGrid');
+      t.innerHTML = testimonials.map(tm => `<div class="testi-card"><div><img src="${tm.img}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;background:#ddd;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22><rect fill=%22%23ddd%22 width=%2250%22 height=%2250%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>👤</text></svg>'"></div><div class="stars">${'★'.repeat(tm.rating)}${'☆'.repeat(5-tm.rating)}</div><p>${tm.comment}</p><strong>${tm.name}</strong></div>`).join('');
+    })();
+
+    // cart toggle
+    document.getElementById('cartOpen').addEventListener('click', () => { cartSidebar.classList.add('open'); cartOverlay.style.display = 'block'; });
+    document.getElementById('closeCart').addEventListener('click', () => { cartSidebar.classList.remove('open'); cartOverlay.style.display = 'none'; });
+    cartOverlay.addEventListener('click', () => { cartSidebar.classList.remove('open'); cartOverlay.style.display = 'none'; });
+
+    // Hamburger
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+
+    // Active menu scroll
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        if (window.innerWidth <= 800) document.getElementById('navLinks').classList.remove('open');
+      });
+    });
+
+    // Back to top
+    document.getElementById('backTop').addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
+
+    // Pesan Sekarang button
+    document.getElementById('pesanSekarang').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelector('#menu').scrollIntoView({behavior:'smooth'});
+    });
+
+    // checkout
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      if (cart.length === 0) { alert('Keranjang kosong!'); return; }
+      const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+      orderModalContent.innerHTML = `
+        <span class="close" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
+        <h2>🧾 Ringkasan Pesanan</h2>
+        ${cart.map(i => `<p>${i.name} x${i.qty} = Rp ${(i.price*i.qty).toLocaleString()}</p>`).join('')}
+        <h3>Total: Rp ${total.toLocaleString()}</h3>
+        <label>Nama <input id="custName" placeholder="Nama Anda" required></label>
+        <label>WhatsApp <input id="custWa" placeholder="081..." required></label>
+        <label>Meja (opsional) <input id="custTable" placeholder="Nomor meja"></label>
+        <label>Catatan <input id="custNote" placeholder="Catatan"></label>
+        <label>Metode Bayar <select id="payMethod"><option value="QRIS">QRIS</option><option value="Transfer Bank">Transfer Bank</option><option value="GoPay">GoPay</option><option value="OVO">OVO</option><option value="DANA">DANA</option><option value="ShopeePay">ShopeePay</option><option value="COD">COD (Bayar di Tempat)</option></select></label>
+        <button class="btn btn-primary" id="confirmOrderBtn" style="width:100%;margin-top:16px;">Konfirmasi Pesanan</button>
+      `;
+      orderModal.style.display = 'flex';
+      document.getElementById('confirmOrderBtn').addEventListener('click', confirmOrder);
+    });
+
+    function confirmOrder() {
+      const name = document.getElementById('custName')?.value.trim();
+      const wa = document.getElementById('custWa')?.value.trim();
+      if (!name || !wa) { alert('Nama dan WhatsApp wajib diisi.'); return; }
+      const method = document.getElementById('payMethod').value;
+      const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+      const orderIdGen = 'ORD-' + Date.now().toString(36).toUpperCase();
+      
+      // Payment info
+      let payInfo = '';
+      if (method === 'QRIS') payInfo = 'Scan QR Code: [placeholder QR]';
+      else if (method === 'Transfer Bank') payInfo = 'BCA 1234567890 a.n Kafe Kenangan';
+      else if (['GoPay','OVO','DANA','ShopeePay'].includes(method)) payInfo = `Nomor: 081400684408 a.n Kafe Kenangan`;
+      else if (method === 'COD') payInfo = 'Bayar saat pesanan tiba.';
+
+      orderModalContent.innerHTML = `
+        <span class="close" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
+        <h2>✅ Pesanan Dikonfirmasi</h2>
+        <p><strong>Order ID:</strong> ${orderIdGen}</p>
+        <p><strong>Nama:</strong> ${name}</p>
+        <p><strong>Total:</strong> Rp ${total.toLocaleString()}</p>
+        <p><strong>Metode:</strong> ${method}</p>
+        <p><strong>Info Pembayaran:</strong> ${payInfo}</p>
+        <p>Status: <span style="background:#f4a261;padding:4px 12px;border-radius:40px;">Menunggu Pembayaran</span></p>
+        <button class="btn btn-primary" id="payConfirmBtn" style="margin:12px 0;">Konfirmasi Pembayaran</button>
+        <button class="btn btn-outline" id="backMenuBtn">Kembali ke Menu</button>
+      `;
+      
+      document.getElementById('payConfirmBtn')?.addEventListener('click', () => {
+        orderModalContent.innerHTML = `
+          <span class="close" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
+          <h2>🎉 Terima Kasih!</h2>
+          <p>Pesanan ${orderIdGen} atas nama ${name} sedang diproses.</p>
+          <p>Total: Rp ${total.toLocaleString()} | Metode: ${method}</p>
+          <button class="btn btn-primary" id="rateBtn">Beri Penilaian</button>
+          <button class="btn btn-outline" id="backMenuBtn2">Kembali ke Menu</button>
+        `;
+        document.getElementById('rateBtn')?.addEventListener('click', showRating);
+        document.getElementById('backMenuBtn2')?.addEventListener('click', () => { orderModal.style.display='none'; cart=[]; updateCart(); window.scrollTo({top:0}); });
+        cart = []; updateCart();
+      });
+      document.getElementById('backMenuBtn')?.addEventListener('click', () => { orderModal.style.display='none'; cart=[]; updateCart(); window.scrollTo({top:0}); });
+    }
+
+    function showRating() {
+      orderModalContent.innerHTML = `
+        <span class="close" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
+        <h2>⭐ Beri Penilaian</h2>
+        <div id="starRating" style="font-size:2.5rem;cursor:pointer;color:#ddd;user-select:none;">☆☆☆☆☆</div>
+        <p id="emojiRating" style="font-size:2rem;text-align:center;">😐</p>
+        <textarea id="reviewComment" placeholder="Komentar..." rows="3"></textarea>
+        <button class="btn btn-primary" id="submitRating" style="width:100%;">Kirim Penilaian</button>
+      `;
+      let rating = 0;
+      const stars = document.getElementById('starRating');
+      const emoji = document.getElementById('emojiRating');
+      
+      stars.addEventListener('click', (e) => {
+        if (e.target.tagName === 'SPAN') {
+          rating = parseInt(e.target.dataset.val);
+          const emojis = ['😠','😟','😐','😊','🤩'];
+          stars.innerHTML = '★★★★★'.split('').map((s,i) => `<span data-val="${i+1}" style="color:${i<rating?'#f4b942':'#ddd'}">★</span>`).join('');
+          emoji.textContent = emojis[rating-1] || '😐';
+        }
+      });
+      
+      document.getElementById('submitRating')?.addEventListener('click', () => {
+        if (rating === 0) { alert('Pilih bintang dulu!'); return; }
+        const comment = document.getElementById('reviewComment')?.value || '';
+        alert('✅ Terima kasih atas penilaian Anda!');
+        orderModalContent.innerHTML = `
+          <h2>🙏 Terima Kasih!</h2>
+          <p>Penilaian Anda sangat berarti bagi kami.</p>
+          <button class="btn btn-primary" id="backMenuFinal" style="margin-top:16px;">Kembali ke Menu</button>
+        `;
+        document.getElementById('backMenuFinal')?.addEventListener('click', () => { orderModal.style.display='none'; window.scrollTo({top:0}); });
+      });
+    }
+
+    // Contact form
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Pesan terkirim! Kami akan merespon segera.');
+      e.target.reset();
+    });
+
+    // Init
+    renderMenu('all');
+    updateCart();
+
+    // Scroll reveal
+    const fades = document.querySelectorAll('.fade');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('section').forEach(s => { s.classList.add('fade'); observer.observe(s); });
+    // Make hero visible
+    document.querySelector('.hero')?.classList.add('visible');
+
+  })();
+</script>
+</body>
+</html>
